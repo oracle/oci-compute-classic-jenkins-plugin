@@ -1,0 +1,26 @@
+<div>
+  A storage volume is a virtual disk that provides persistent block storage space for
+  instances in Oracle Cloud Infrastructure Compute Classic Service.
+
+  <p>Use one of the following abbreviations for the unit of measurement:
+  <ul>
+    <li><code>B</code> or <code>b</code> for bytes
+    <li><code>K</code> or <code>k</code> for kilobytes
+    <li><code>M</code> or <code>m</code> for megabytes
+    <li><code>G</code> or <code>g</code> for gigabytes
+    <li><code>T</code> or <code>t</code> for terabytes
+  </ul>
+  For example, to create a volume of size 10 gigabytes, you can specify
+  <code>10G</code>, or <code>10240M</code>, or <code>10485760K</code>, and so
+  on.
+  See the
+  <a href="https://docs.oracle.com/cloud/latest/computecs_common/OCSUG/GUID-371BC212-A904-4489-A3B5-BF20C897EFD9.htm">About Storage Volumes</a>
+  documentation for additional information.
+
+  <p>
+  <!-- We also accept plain "[0-9]+", which is accepted by the cloud UI. -->
+  If you omit the unit of measurement, <code>G</code> will be used.
+  <!-- We also accept "[0-9]+[kKmMgGtT][bB]" since users are likely to add an extra "B". -->
+  Additionally, you can use the abbreviations <code>KB</code>, <code>MB</code>,
+  <code>GB</code>, or <code>TB</code>.
+</div>

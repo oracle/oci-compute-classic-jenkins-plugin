@@ -1,0 +1,37 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:x="/com/oracle/cloud/compute/jenkins/lib">
+  <f:block>
+    <div class="section-header">
+      &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Please refer to <a href="https://wiki.jenkins-ci.org/display/JENKINS/Oracle+Cloud+Infrastructure+Compute+Classic+Plugin">Oracle Cloud Infrastructure Compute Classic Plugin</a> for tutorial and license info.
+    </div>
+  </f:block>
+  <f:entry title="${%cloudName}" field="cloudName">
+    <f:textbox clazz="required"/>
+  </f:entry>
+
+  <f:entry title="${%apiEndpoint}" field="apiEndpoint">
+    <f:textbox clazz="required"/>
+  </f:entry>
+  <f:entry title="${%identityDomainName}" field="identityDomainName">
+    <f:textbox clazz="required"/>
+  </f:entry>
+  <f:entry title="${%userName}" field="userName">
+    <f:textbox clazz="required"/>
+  </f:entry>
+  <f:entry title="${%password}" field="password">
+    <f:password clazz="required"/>
+  </f:entry>
+  <f:validateButton title="${%testConnection}" progress="${%testConnection.progress}" method="testConnection" with="apiEndpoint,identityDomainName,userName,password" />
+
+  <f:advanced>
+    <f:entry title="${%instanceCapStr}" field="instanceCapStr">
+      <f:textbox />
+    </f:entry>
+  </f:advanced>
+
+  <f:entry title="${%templates}" description="${%templates.desc}" help="${descriptor.getHelpFile('templates')}">
+    <x:idRepeatable field="templates" header="${%templates.header}" add="${%templates.add}" nextIdField="nextTemplateId" idField="templateId">
+      <st:include page="config.jelly" class="${descriptor.clazz}" />
+    </x:idRepeatable>
+  </f:entry>
+</j:jelly>

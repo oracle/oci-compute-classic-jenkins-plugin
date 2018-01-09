@@ -1,0 +1,199 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:x="/com/oracle/cloud/compute/jenkins/lib">
+  <table width="100%">
+    <f:entry title="${%description}" field="description">
+      <f:textbox />
+    </f:entry>
+
+    <j:if test="${instance.disableCause!=null}">
+      <div class="warning">
+        <div class="message">
+          ${%disableCause(instance.disableCause)}
+          <br/><br/>
+          ${%reenable}
+        </div>
+      </div>
+    </j:if>
+
+    <f:slave-mode name="mode" node="${instance}" />
+    <f:entry title="${%labelString}" field="labelString">
+      <f:textbox />
+    </f:entry>
+
+    <f:entry title="${%shapeName}" field="shapeName">
+      <f:select/>
+    </f:entry>
+
+	<f:entry title="${%imageListSource}" field="imageListSource">
+      <f:select />
+    </f:entry>
+
+    <f:entry title="${%imageListName}" field="imageListName">
+      <f:select />
+    </f:entry>
+
+    <f:entry title="${%imageListEntry}" field="imageListEntry">
+      <f:select />
+    </f:entry>
+
+    <f:entry title="${%Enable Hypervisor PV Mode}" field="hypervisorPVEnabled">
+      <f:checkbox />
+    </f:entry>
+
+    <f:entry title="${%volumeSize}" field="volumeSize">
+      <f:textbox default="22G"/>
+    </f:entry>
+
+    <f:entry title="${%securityListName}"> 
+      <f:select id="securitySelect" field="securityListName" onchange="selectSecurityList(this);"/>
+      <select id="securityLists" field="securityListNames"  size="5"  multiple="multiple"  class="setting-input" onclick="selectAll()" name="_.securityListNames">    
+      </select>
+      <input type="button" value="Reset Selected Security List" onclick="removeAll()" />
+    </f:entry>
+
+    <f:entry title="${%remoteFS}" field="remoteFS">
+      <f:textbox />
+    </f:entry>
+
+    <f:entry title="${%sshUser}" field="sshUser">
+      <f:textbox default="${descriptor.defaultSshUser}" />
+    </f:entry>
+
+    <f:entry title="${%sshKeyName}" field="sshKeyName">
+      <f:select />
+    </f:entry>
+    <f:entry title="${%privateKey}" field="privateKey">
+      <f:textarea style="height:100px;"/>
+    </f:entry>
+    <x:validateButton title="${%verifySshKeyPair}"
+                      progress="${%verifySshKeyPair.progress}"
+                      method="verifySshKeyPair"
+                      with="../apiEndpoint,../identityDomainName,../userName,../password,sshKeyName,privateKey"
+                      help="${descriptor.getHelpFile('verifySshKeyPair')}" />
+
+    <f:advanced>
+      <f:entry title="${%orchDescription}" field="orchDescription">
+        <f:textbox />
+      </f:entry>
+
+      <f:entry title="${%startTimeoutSeconds}" field="startTimeoutSeconds">
+        <f:textbox default="${descriptor.defaultStartTimeoutSeconds}" />
+      </f:entry>
+
+      <f:entry title="${%sshConnectTimeoutSeconds}" field="sshConnectTimeoutSeconds">
+        <f:textbox default="${descriptor.defaultSshConnectTimeoutSeconds}" />
+      </f:entry>
+
+      <f:entry title="${%idleTerminationMinutes}" field="idleTerminationMinutes">
+        <f:textbox default="30" />
+      </f:entry>
+
+      <f:entry title="${%numExecutors}" field="numExecutors">
+        <f:textbox default="${descriptor.defaultNumExecutors}" />
+      </f:entry>
+
+      <f:entry title="${%initScript}" field="initScript">
+        <f:textarea />
+      </f:entry>
+      
+      <f:entry title="${%initScriptTimeoutSeconds}" field="initScriptTimeoutSeconds">
+	    <f:textbox default="120" />
+	  </f:entry>
+    </f:advanced>
+
+    <f:entry title="">
+      <div align="right">
+        <f:repeatableDeleteButton value="${%delete}" />
+      </div>
+    </f:entry>
+  </table>
+  
+  <script>
+        <j:set var="value" value="${instance.securityListNames}" />
+        <![CDATA[
+        var items = '${value}';
+        items = items.replace("[","");
+        items = items.replace("]","");
+        items = items.split(",");
+        
+        window.addEventListener("load",function(){
+          setTimeout(fieldcheck,3000);
+        });
+        
+        function selectSecurityList(select) {
+              var sl = select.options[select.selectedIndex];
+              var option = document.createElement("option");
+              option.text = sl.text + " [Click to remove]";
+              option.value = sl.value;
+              option.selected = true; 
+             
+              var secList = document.getElementById("securityLists");
+              var secListOptions = secList.options;
+              for (var i = 0; i < secListOptions.length; i++){
+                if(secListOptions[i].value == sl.value) 
+                return;
+              }
+                
+              secList.appendChild(option);
+              option.setAttribute('onclick', 'this.parentNode.removeChild(this);');   
+        };
+        
+        function selectAll() {
+            var secList = document.getElementById("securityLists");
+            var secListOptions = secList.options;
+            for (var i = 0; i < secListOptions.length; i++){
+                secListOptions[i].selected = true;
+              }
+        };
+            
+        function removeAll() {
+            var secList = document.getElementById("securityLists"); 
+             while (secList.options.length > 0) {                
+                secList.remove(0);
+            }       
+        };
+        
+        function fieldcheck() {
+            var secList = document.getElementById("securityLists");
+            var select = document.getElementById("securitySelect");
+            
+            var selectOptionVal = [];
+            for (var i = 0; i < select.options.length; i++) { 
+                selectOptionVal.push(select.options[i].value);
+            }
+            
+            //load security list from config file
+            if(secList.options.length > 0) {
+                for(var i = 0; i < secList.options.length; i++) {
+                var index = selectOptionVal.indexOf(secList.options[i].value);
+                if(index != 0) {
+                    secList.options[i].text = select.options[index].text  + " [Click to remove]";
+                    secList.options[i].setAttribute('onclick', 'this.parentNode.removeChild(this);'); 
+                }else{
+                    secList.remove(i);
+                }
+            }
+            }else{
+                for(var i = 0; i < items.length; i++) {
+                    var secListOption = document.createElement("option");
+                    secListOption.text =  "";
+                    secListOption.value = items[i].trim();
+                    secListOption.selected = true; 
+                    secList.appendChild(secListOption);
+                }
+            }
+            //verify security list base on compare list
+            for(var i = 0; i < secList.options.length; i++) {
+                var index = selectOptionVal.indexOf(secList.options[i].value);
+                if(index != -1) {
+                    secList.options[i].text = select.options[index].text  + " [Click to remove]";
+                    secList.options[i].setAttribute('onclick', 'this.parentNode.removeChild(this);'); 
+                }else{
+                    secList.remove(i);
+                }
+            }
+        
+        };
+        ]]>
+    </script>
+</j:jelly>
