@@ -10,7 +10,7 @@ Oracle Cloud Infrastructure Compute Classic Plugin allow Jenkins to create compu
 
 ## Compatibility
 1. The plugin is tested on minimum Jenkins version 1.625.3, they may not work with versions early than 1.554.
-2. For Jenkins versions between 1.554 and 1.625, please make sure plugin 'bouncycastle API Plugin' has been pre-installed. This could be checked at 'Manage Jenkins' -> 'Manage Plugins' -> 'Installed' list, and could be found and installed from 'Available' list.   For any questions on install/config these plugins, please contact <computecloud_plugin_dev_us_grp@oracle.com> for help.
+2. For Jenkins versions between 1.554 and 1.625, please make sure plugin 'bouncycastle API Plugin' has been pre-installed. This could be checked at 'Manage Jenkins' -> 'Manage Plugins' -> 'Installed' list, and could be found and installed from 'Available' list.
 
 ## Installation
 You can install or update the plugin through Jenkins update center or manually.
